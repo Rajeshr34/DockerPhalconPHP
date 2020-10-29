@@ -1,0 +1,50 @@
+
+server {
+    listen 90;
+    server_name onesmart_phalcon_back_end;
+    index index.php index.html index.htm;
+    root /onesmart/src/backend/public/;
+    include /etc/nginx/tools/_phalcon;
+}
+
+
+server {
+    listen 91;
+    server_name onesmart_phalcon_api;
+    index index.php index.html index.htm;
+    root /onesmart/src/api/public/;
+    include /etc/nginx/tools/_phalcon;
+}
+
+server {
+    listen 92;
+    server_name onesmart_phalcon_storage_cache;
+    index index.php index.html index.htm;
+    root '/onesmart/storage/cache';
+    add_header 'Access-Control-Allow-Origin' '*';
+}
+
+server {
+    listen 93;
+    server_name onesmart_phalcon_assets_package;
+    index index.php index.html index.htm;
+    root '/onesmart/assets/plugins-package';
+    add_header 'Access-Control-Allow-Origin' '*';
+}
+
+server {
+    listen 94;
+    server_name onesmart_phalcon_seller_backend;
+    index index.php index.html index.htm;
+    root /onesmart/src/seller/public/;
+    include /etc/nginx/tools/_phalcon;
+}
+
+server {
+    listen 95;
+    server_name onesmart_phalcon_approval_backend;
+    index index.php index.html index.htm;
+    root /onesmart/src/approval/public/;
+    include /etc/nginx/tools/_phalcon;
+}
+

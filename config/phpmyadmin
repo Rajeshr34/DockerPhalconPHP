@@ -1,0 +1,14 @@
+server {
+    listen 0.0.0.0:100;
+    root /phpMyAdmin-4.9.7-english;
+    server_name localhost;
+    client_max_body_size 100M;
+    location / {
+        try_files $uri $uri/index.php;
+    }
+    location ~ \.php$ {
+        fastcgi_pass unix:/run/php/php7.4-fpm.sock;
+        fastcgi_index index.php;
+        include fastcgi.conf;
+    }
+}
