@@ -1,0 +1,15 @@
+version: '3'
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - "./config/nginx:/etc/nginx/nginx.conf"
+      - "./config/index.php:/app/index.php"
+      - "./config/index:/etc/nginx/sites-enabled/default"
+      - "./config/__cors_variable:/etc/nginx/tools/__cors_variable"
+      - "./config/_cors:/etc/nginx/tools/_cors"
+      - "./config/_phalcon:/etc/nginx/tools/_phalcon"
+    ports:
+      - "8000:80"

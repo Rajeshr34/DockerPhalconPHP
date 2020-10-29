@@ -1,0 +1,7 @@
+server {
+    listen 80;
+    server_name onesmart_phalcon_back_end;
+    index index.php index.html index.htm;
+    root /var/www/public/src/backend/public/;
+    include /etc/nginx/tools/_phalcon;
+}

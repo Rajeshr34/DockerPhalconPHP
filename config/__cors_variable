@@ -1,0 +1,2 @@
+set $methods "'GET, POST'";
+set $headers "'DNT,X-CustomHeader,Keep-Alive,token,User-Agent,xToken,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Content-Range,Range'";
