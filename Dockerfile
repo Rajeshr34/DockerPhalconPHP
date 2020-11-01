@@ -98,7 +98,7 @@ RUN git clone https://github.com/phalcon/phalcon-devtools.git && cd phalcon-devt
 
 RUN wget https://files.phpmyadmin.net/phpMyAdmin/4.9.7/phpMyAdmin-4.9.7-english.zip && unzip phpMyAdmin-4.9.7-english.zip
 
-RUN echo "ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY 'Ihhjbebbjh@34';\nDELETE FROM mysql.user WHERE User='';\nDELETE FROM mysql.user WHERE User='root' AND Host NOT IN ('localhost', '127.0.0.1', '::1');\nDROP DATABASE IF EXISTS test;\nDELETE FROM mysql.db WHERE Db='test' OR Db='test\\_%';\nFLUSH PRIVILEGES;" > mysql.sql && /etc/init.d/mysql restart && mysql -sfu root < mysql.sql
+RUN echo "ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY '123';\nDELETE FROM mysql.user WHERE User='';\nDELETE FROM mysql.user WHERE User='root' AND Host NOT IN ('localhost', '127.0.0.1', '::1');\nDROP DATABASE IF EXISTS test;\nDELETE FROM mysql.db WHERE Db='test' OR Db='test\\_%';\nFLUSH PRIVILEGES;" > mysql.sql && /etc/init.d/mysql restart && mysql -sfu root < mysql.sql
 
 RUN sed -i 's/upload_max_filesize\s*=.*/upload_max_filesize=1024M/g' /etc/php/7.1/fpm/php.ini
 RUN sed -i 's/post_max_size\s*=.*/post_max_size=1024M/g' /etc/php/7.1/fpm/php.ini
@@ -107,6 +107,6 @@ RUN sed -i 's/max_execution_time\s*=.*/max_execution_time=24000/g' /etc/php/7.1/
 RUN sed -i 's/memory_limit\s*=.*/memory_limit=12000M/g' /etc/php/7.1/fpm/php.ini
 RUN sed -i 's/display_errors\s*=.*/display_errors=On/g' /etc/php/7.1/fpm/php.ini
 
-#RUN echo '[mysqld]\nsql_mode = 'STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION'\nEND' > /etc/mysql/conf.d/strict.cnf
+RUN echo '[mysqld]\nsql_mode = STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' > /etc/mysql/conf.d/strict.cnf
 
 CMD /etc/init.d/mysql restart && /etc/init.d/php7.1-fpm restart && nginx -g "daemon off;"
