@@ -29,7 +29,7 @@ RUN apt-get install -y apt-utils
 RUN apt-get install -y zlib1g-dev libpcre3 libpcre3-dev unzip libxml2 libgd-dev libgeoip1 libgeoip-dev libperl-dev libxslt1-dev uuid-dev
 RUN apt-get install -y libssl-dev libxml2-dev libxslt-dev
 RUN apt-get install -y git-core nano curl zsh wget
-RUN wget https://github.com/robbyrussell/oh-my-zsh/raw/master/tools/install.sh -O - | zsh || true
+RUN sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
 
 WORKDIR /
 
@@ -68,37 +68,45 @@ RUN apt-get install software-properties-common -y && add-apt-repository -y ppa:$
 ENV DEBIAN_FRONTEND=noninteractive
 RUN apt-get -y install tzdata
 
-RUN apt-get -y install php7.4 mcrypt php7.1-mcrypt php-mbstring php-pear php7.4-dev php7.4-xml php-mysql imagemagick php-imagick php7.4-fpm php7.4-opcache
-RUN apt-get -y install php7.4-bz2 php7.4-curl php7.4-gd php7.4-imap php7.4-intl php7.4-json php7.4-mbstring php7.4-mysql php7.4-pgsql php7.4-sqlite3 php7.4-xmlrpc php7.4-xsl php7.4-zip php7.4-cli php7.4-common php7.4-cgi && sed -i "s/;listen.mode = 0660/listen.mode = 0660/g" /etc/php\/7.4/fpm/pool.d/www.conf
+RUN apt-get -y install php7.1 mcrypt php7.1-mcrypt php-mbstring php-pear php7.1-dev php7.1-xml php-mysql imagemagick php-imagick php7.1-fpm php7.1-opcache
+RUN apt-get -y install php7.1-bz2 php7.1-curl php7.1-gd php7.1-imap php7.1-intl php7.1-json php7.1-mbstring php7.1-mysql php7.1-pgsql php7.1-sqlite3 php7.1-xmlrpc php7.1-xsl php7.1-zip php7.1-cli php7.1-common php7.1-cgi && sed -i "s/;listen.mode = 0660/listen.mode = 0660/g" /etc/php\/7.1/fpm/pool.d/www.conf
 RUN apt-get -y install mysql-server
 RUN service mysql start
-RUN apt-get install -y libfontenc1 xfonts-75dpi php7.4-mbstring php7.4-dom php-gettext php7.4-tidy php-bcmath php-zip liblcms2-dev libpng-dev gcc make re2c xfonts-base
+RUN apt-get install -y libfontenc1 xfonts-75dpi php7.1-mbstring php7.1-dom php-gettext php7.1-tidy php-bcmath php-zip liblcms2-dev libpng-dev gcc make re2c xfonts-base
 RUN apt-get install -y xfonts-encodings xfonts-utils openssl beanstalkd libxrender-dev libx11-dev libxext-dev libfontconfig1-dev postfix libsasl2-modules libfreetype6-dev fontconfig autoconf libc-dev pkg-config libyaml-dev mailutils python3-pip libffi-dev python3-dev
 
 RUN wget https://github.com/wkhtmltopdf/wkhtmltopdf/releases/download/0.12.5/wkhtmltox_0.12.5-1.bionic_amd64.deb && dpkg -i wkhtmltox_0.12.5-1.bionic_amd64.deb && apt --fix-broken install
 
-RUN git clone https://github.com/jbboehr/php-psr.git && cd php-psr && phpize && ./configure && make && make test && make install && echo 'extension = psr.so' > /etc/php/7.4/mods-available/psr.ini && ln -s /etc/php/7.4/mods-available/psr.ini /etc/php/7.4/fpm/conf.d/20-psr.ini && ln -s /etc/php/7.4/mods-available/psr.ini /etc/php/7.4/cli/conf.d/20-psr.ini && ln -s /etc/php/7.4/mods-available/psr.ini /etc/php/7.4/cgi/conf.d/20-psr.ini
+RUN git clone https://github.com/jbboehr/php-psr.git && cd php-psr && phpize && ./configure && make && make test && make install && echo 'extension = psr.so' > /etc/php/7.1/mods-available/psr.ini && ln -s /etc/php/7.1/mods-available/psr.ini /etc/php/7.1/fpm/conf.d/20-psr.ini && ln -s /etc/php/7.1/mods-available/psr.ini /etc/php/7.1/cli/conf.d/20-psr.ini && ln -s /etc/php/7.1/mods-available/psr.ini /etc/php/7.1/cgi/conf.d/20-psr.ini
 
-RUN service php7.4-fpm start
+RUN service php7.1-fpm start
 
-RUN service php7.4-fpm restart
+RUN service php7.1-fpm restart
 
 RUN curl -s "https://packagecloud.io/install/repositories/phalcon/stable/script.deb.sh" | bash
 
-RUN apt-get install php7.4-phalcon -y
+#apt-cache policy php7.4-phalcon for latest version
+#apt-cache policy php7.3-phalcon for version 3
 
-RUN wget https://github.com/phalcon/phalcon-devtools/releases/download/v4.0.3/phalcon.phar && chmod +x phalcon.phar && mv phalcon.phar /usr/local/bin/phalcon
+RUN apt-get install php7.1-phalcon=3.4.5-1+php7.1 -y
+
+RUN apt-get remove php7.4-cli -y
+
+RUN curl -sS https://getcomposer.org/installer | php && mv composer.phar /usr/local/bin/composer
+
+RUN git clone https://github.com/phalcon/phalcon-devtools.git && cd phalcon-devtools && git checkout 3.4.x && ln -s $(pwd)/phalcon /usr/local/bin/phalcon && chmod ugo+x /usr/local/bin/phalcon && composer install
 
 RUN wget https://files.phpmyadmin.net/phpMyAdmin/4.9.7/phpMyAdmin-4.9.7-english.zip && unzip phpMyAdmin-4.9.7-english.zip
 
 RUN echo "ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY 'Ihhjbebbjh@34';\nDELETE FROM mysql.user WHERE User='';\nDELETE FROM mysql.user WHERE User='root' AND Host NOT IN ('localhost', '127.0.0.1', '::1');\nDROP DATABASE IF EXISTS test;\nDELETE FROM mysql.db WHERE Db='test' OR Db='test\\_%';\nFLUSH PRIVILEGES;" > mysql.sql && /etc/init.d/mysql restart && mysql -sfu root < mysql.sql
 
-RUN sed -i 's/upload_max_filesize\s*=.*/upload_max_filesize=1024M/g' /etc/php/7.4/fpm/php.ini
-RUN sed -i 's/post_max_size\s*=.*/post_max_size=1024M/g' /etc/php/7.4/fpm/php.ini
-RUN sed -i 's/max_input_time\s*=.*/max_input_time=24000/g' /etc/php/7.4/fpm/php.ini
-RUN sed -i 's/max_execution_time\s*=.*/max_execution_time=24000/g' /etc/php/7.4/fpm/php.ini
-RUN sed -i 's/memory_limit\s*=.*/memory_limit=12000M/g' /etc/php/7.4/fpm/php.ini
+RUN sed -i 's/upload_max_filesize\s*=.*/upload_max_filesize=1024M/g' /etc/php/7.1/fpm/php.ini
+RUN sed -i 's/post_max_size\s*=.*/post_max_size=1024M/g' /etc/php/7.1/fpm/php.ini
+RUN sed -i 's/max_input_time\s*=.*/max_input_time=24000/g' /etc/php/7.1/fpm/php.ini
+RUN sed -i 's/max_execution_time\s*=.*/max_execution_time=24000/g' /etc/php/7.1/fpm/php.ini
+RUN sed -i 's/memory_limit\s*=.*/memory_limit=12000M/g' /etc/php/7.1/fpm/php.ini
+RUN sed -i 's/display_errors\s*=.*/display_errors=On/g' /etc/php/7.1/fpm/php.ini
 
 #RUN echo '[mysqld]\nsql_mode = 'STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION'\nEND' > /etc/mysql/conf.d/strict.cnf
 
-CMD /etc/init.d/mysql restart && /etc/init.d/php7.4-fpm restart && nginx -g "daemon off;"
+CMD /etc/init.d/mysql restart && /etc/init.d/php7.1-fpm restart && nginx -g "daemon off;"
