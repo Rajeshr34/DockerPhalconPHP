@@ -83,14 +83,22 @@ RUN service php7.1-fpm start
 
 RUN service php7.1-fpm restart
 
-RUN curl -s "https://packagecloud.io/install/repositories/phalcon/stable/script.deb.sh" | bash
+#RUN curl -s "https://packagecloud.io/install/repositories/phalcon/stable/script.deb.sh" | bash
 
 #apt-cache policy php7.4-phalcon for latest version
 #apt-cache policy php7.3-phalcon for version 3
 
-RUN apt-get install php7.1-phalcon=3.4.5-1+php7.1 -y
+#RUN apt-get install php7.1-phalcon=3.4.5-1+php7.1 -y
 
-RUN apt-get remove php7.4-cli -y
+RUN git clone https://github.com/phalcon/cphalcon.git && cd cphalcon && git checkout 3.4.x && curl -o phalcon/mvc/model/query.zep https://gist.githubusercontent.com/Rajeshr34/e933e7c8675c7304eca250b79a105e60/raw/5b57d383f6691ada23955531a2d8292f92815f60/Query.zep && cd build && ./install
+
+RUN echo '[phalcon]\nextension = phalcon.so\nphalcon.orm.cast_on_hydrate = On\nphalcon.orm.column_renaming = On\nphalcon.orm.ignore_unknown_columns = On\nphalcon.orm.update_snapshot_on_save = On' > /etc/php/7.1/mods-available/phalcon.ini
+
+RUN ln -s /etc/php/7.1/mods-available/phalcon.ini /etc/php/7.1/fpm/conf.d/20-phalcon.ini
+RUN ln -s /etc/php/7.1/mods-available/phalcon.ini /etc/php/7.1/cli/conf.d/20-phalcon.ini
+RUN ln -s /etc/php/7.1/mods-available/phalcon.ini /etc/php/7.1/cgi/conf.d/20-phalcon.ini
+
+RUN /etc/init.d/php7.1-fpm restart && apt-get remove php7.4-cli -y
 
 RUN curl -sS https://getcomposer.org/installer | php && mv composer.phar /usr/local/bin/composer
 
